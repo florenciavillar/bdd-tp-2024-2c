@@ -1,0 +1,32 @@
+.Employees {
+    width: 80%;
+
+    .employee {
+        display: flex;
+        flex-direction: row;
+        gap: 15px;
+        align-items: center;
+        width: 100%;
+        text-align: justify;
+
+        .avatar {
+            width: 25px;
+            height: 25px;
+        }
+        .actions, .name, .age, .position  {
+            width: 25%;
+        }
+
+        .name {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+        }
+    }
+}

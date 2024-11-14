@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "name": "Juan Pérez",
+    "age": 30,
+    "position": "Dev"
+  },
+  {
+    "id": 2,
+    "name": "Ana García",
+    "age": 25,
+    "position": "QA"
+  },
+  {
+    "id": 3,
+    "name": "Florencia",
+    "age": "27",
+    "position": "Dev"
+  },
+  {
+    "id": 1731557664202,
+    "name": "Maria",
+    "age": "33",
+    "position": "PO"
+  },
+  {
+    "id": 1731557664203,
+    "name": "Maria",
+    "age": "22",
+    "position": "QA"
+  },
+  {
+    "id": 1731557664204,
+    "name": "Mike",
+    "age": "40",
+    "position": "Tester"
+  }
+]
