@@ -5,11 +5,12 @@ import axios from 'axios';
 
 function App() {
     const [ employees, setEmployees ] = useState([]);
-    const [newEmployee, setNewEmployee] = useState({
+    const [ newEmployee, setNewEmployee ] = useState({
         name: '',
         age: '',
         position: ''
       });
+    const [ resume, setResume ] = useState(null);
 
       useEffect(() => {
         const fetchEmployees = async () => {
@@ -23,18 +24,45 @@ function App() {
         fetchEmployees();
       }, []);
 
+      const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        setResume(file);
+      };
+
+      const addResume = async () => {
+        if (resume) {
+          const formData = new FormData();
+          formData.append('resume', resume); // Agregar el archivo al FormData
+      
+          try {
+            const response = await axios.post('http://localhost:3001/api/resumes', formData);
+            return response.data;
+          } catch (error) {
+            // Manejar errores
+            throw error;
+          }
+        };
+      };
+
     const addEmployee = async (event) => {
         event.preventDefault();
         try {
+          let uploadedResume = null;
+            if (resume) {
+                uploadedResume = await addResume();
+                document.getElementById('file').value = ''
+                setResume(null);
+            }
+            const employeeWithResume = { ...newEmployee, resume: uploadedResume ? uploadedResume.resume : null };
+
             const response = await axios.post('http://localhost:3001/api/employees', 
-                newEmployee
+              employeeWithResume
             )
-            // Actualizar la lista de empleados agregando el nuevo
-            setEmployees([...employees, response.data.employee]);
-            // Limpiar el formulario
+            setEmployees((prevEmployees) => [...prevEmployees, response.data.employee]);
             setNewEmployee({ name: '', age: '', position: '' });
         } catch(error) {
             console.error('Error al crear el empleado:', error);
+            alert('Error al crear el empleado');
         };
     };
 
@@ -55,7 +83,7 @@ function App() {
                 <div className="form-group">
                     <label>Age:</label>
                     <input
-                        type="age"
+                        type="number"
                         placeholder="Age"
                         value={newEmployee.age}
                         onChange={(e) => setNewEmployee({ ...newEmployee, age: e.target.value })}
@@ -64,10 +92,18 @@ function App() {
                 <div className="form-group">
                     <label>Position:</label>
                     <input
-                        type="position"
+                        type="text"
                         placeholder="Position"
                         value={newEmployee.position}
                         onChange={(e) => setNewEmployee({ ...newEmployee, position: e.target.value })}
+                    />
+                </div>
+                <div className="form-group">
+                    <label>Resume:</label>
+                    <input
+                      id="file"
+                      type="file"
+                      onChange={handleFileChange}
                     />
                 </div>
                 <button type="submit">Add Employee</button>
