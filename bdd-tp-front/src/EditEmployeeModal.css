@@ -1,0 +1,58 @@
+.editEmployeeModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  
+  .modalContent {
+    background-color: #282c34;
+    padding: 30px;
+    border-radius: 8px;
+    max-width: 100%;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+
+    h2 {
+        margin-top: 0;
+    }
+
+    form {
+        width: 100%;
+
+        .form-group {
+            display: flex;
+            margin-top: 20px;
+
+            label {
+                width: 30%;
+                text-align: justify;
+            }
+        }
+
+        .actions {
+            display: flex;
+            gap: 30px;
+
+            button {
+                width: 170px;
+                padding: 10px;
+                margin-left: 0;
+                background: gainsboro;
+                font-weight: bold;
+            }
+
+            button[type="submit"]:hover {
+                background-color: #45a049;
+            }
+
+            button[type="button"]:hover {
+                background-color: #f44336;
+            }
+        }
+    }
+  }
+}

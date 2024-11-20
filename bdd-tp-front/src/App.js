@@ -1,5 +1,5 @@
-import './App.css';
 import React, { useState, useEffect } from 'react';
+import './App.css';
 import Employees from './Employees';
 import axios from 'axios';
 
@@ -16,7 +16,7 @@ function App() {
         const fetchEmployees = async () => {
           try {
             const response = await axios.get('http://localhost:3001/api/employees');
-            setEmployees(response.data.employees); // Actualizar el estado con los empleados
+            setEmployees(response.data.employees || []);
           } catch (error) {
             console.error('Error al cargar los empleados:', error);
           }
@@ -33,12 +33,13 @@ function App() {
         if (resume) {
           const formData = new FormData();
           formData.append('resume', resume); // Agregar el archivo al FormData
-      
+
           try {
             const response = await axios.post('http://localhost:3001/api/resumes', formData);
             return response.data;
           } catch (error) {
             // Manejar errores
+            console.error('Error al subir el archivo:', error);
             throw error;
           }
         };
@@ -47,22 +48,32 @@ function App() {
     const addEmployee = async (event) => {
         event.preventDefault();
         try {
+          if (!newEmployee.name || !newEmployee.age || !newEmployee.position) {
+            alert("Please, complete all mandatory fields");
+            return;
+          }
+
           let uploadedResume = null;
             if (resume) {
                 uploadedResume = await addResume();
-                document.getElementById('file').value = ''
+                document.getElementById('file').value = '';
                 setResume(null);
             }
-            const employeeWithResume = { ...newEmployee, resume: uploadedResume ? uploadedResume.resume : null };
+            const employeeWithResume = {
+              ...newEmployee,
+              resume: uploadedResume ? uploadedResume.resume : null
+            };
 
-            const response = await axios.post('http://localhost:3001/api/employees', 
-              employeeWithResume
-            )
-            setEmployees((prevEmployees) => [...prevEmployees, response.data.employee]);
+            await axios.post('http://localhost:3001/api/employees', employeeWithResume );
+            // Actualizo la lista despues de agregar un employee
+            const employeesResponse = await axios.get('http://localhost:3001/api/employees');
+
+            // Limpio los campos
+            setEmployees(employeesResponse.data.employees);
             setNewEmployee({ name: '', age: '', position: '' });
+            alert('Employee created successfully!');
         } catch(error) {
-            console.error('Error al crear el empleado:', error);
-            alert('Error al crear el empleado');
+            alert('Error saving the employee');
         };
     };
 
@@ -114,7 +125,7 @@ function App() {
                 <h4>Position</h4>
                 <h4>Actions</h4>
             </div>
-            <Employees employees={employees}/>
+            <Employees employees={employees} setEmployees={setEmployees} />
       </header>
     </div>
   );
