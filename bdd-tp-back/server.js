@@ -83,7 +83,7 @@ const corsOptions = {
         const resumesColeccion = mongoDB.collection("resumes");
 
         // Buscar el resume en MongoDB
-        const resume = await resumesColeccion.findOne({ _id: resumeId });
+        const resume = await resumesColeccion.findOne({ _id: new ObjectId(resumeId) });
 
         if (!resume) {
             return res.status(404).json({ message: 'Resume not found' });
@@ -207,6 +207,17 @@ app.put('/api/employees/:id', upload.single('resume'), async (req, res) => {
           return res.status(404).json({ message: 'Empleado no encontrado' });
         }
 
+        // Recuperar el resume_id actual antes de la actualización
+        mysqlDB.query(
+          'SELECT resume_id FROM employees WHERE id = ?',
+          [employeeId],
+          async (err, rows) => {
+            if (err) {
+              return res.status(500).json({ message: 'Error al obtener el resume_id actual', error: err });
+            }
+
+            const currentResumeId = rows[0]?.resume_id;
+
         // Si actualizo el resume
         const fileData = req.file;
         if (fileData ) {
@@ -249,10 +260,12 @@ app.put('/api/employees/:id', upload.single('resume'), async (req, res) => {
                 id: employeeId,
                 name,
                 age,
-                position
+                position,
+                resumeId: currentResumeId
               }
             });
           }
+        });
       });
     } catch (error) {
       console.error('Error al editar el empleado:', error);

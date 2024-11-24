@@ -81,7 +81,7 @@ const Employees = ({ employees, setEmployees }) => {
             </p>
             {employee.resume_id && (
                 <a href={`http://localhost:3001/api/resumes/${employee.resume_id}`} target="_blank" rel="noopener noreferrer">
-                    Download Resume
+                    Download
                 </a>
             )}
             <div className="actions">

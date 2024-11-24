@@ -13,8 +13,8 @@
             width: 25px;
             height: 25px;
         }
-        .actions, .name, .age, .position  {
-            width: 25%;
+        .actions, .name, .age, .position, a {
+            width: 20%;
         }
 
         .name {
