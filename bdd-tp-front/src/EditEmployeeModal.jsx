@@ -1,17 +1,25 @@
 import React, { useState, useEffect } from 'react';
-
 import './EditEmployeeModal.css';
 
 const EditEmployeeModal = ({ employee, onSubmit, onCancel }) => {
     const [name, setName] = useState('');
     const [age, setAge] = useState('');
     const [position, setPosition] = useState('');
+    const [resume, setResume] = useState(null);
 
   useEffect(() => {
     setName(employee.name);
     setAge(employee.age);
     setPosition(employee.position);
+    if (employee.resumeId) {
+        setResume({ name: employee.resumeId });
+    }
   }, [employee]);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setResume(file);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -26,6 +34,7 @@ const EditEmployeeModal = ({ employee, onSubmit, onCancel }) => {
       name: name,
       age: age,
       position: position,
+      resume: resume
     };
 
     onSubmit(updatedEmployee);
@@ -59,6 +68,14 @@ const EditEmployeeModal = ({ employee, onSubmit, onCancel }) => {
                 value={position}
                 onChange={(e) => setPosition(e.target.value)}
               />
+            </div>
+            <div className="form-group">
+                <label>Resume:</label>
+                <input
+                  id="file"
+                  type="file"
+                  onChange={handleFileChange}
+                />
             </div>
             <div className="actions">
               <button type="submit">

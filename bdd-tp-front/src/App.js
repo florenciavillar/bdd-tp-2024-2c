@@ -12,69 +12,60 @@ function App() {
       });
     const [ resume, setResume ] = useState(null);
 
-      useEffect(() => {
-        const fetchEmployees = async () => {
-          try {
-            const response = await axios.get('http://localhost:3001/api/employees');
-            setEmployees(response.data.employees || []);
-          } catch (error) {
-            console.error('Error al cargar los empleados:', error);
-          }
-        };
-        fetchEmployees();
-      }, []);
-
-      const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        setResume(file);
+    useEffect(() => {
+      const fetchEmployees = async () => {
+        try {
+          const response = await axios.get('http://localhost:3001/api/employees');
+          setEmployees(response.data.employees || []);
+        } catch (error) {
+          console.error('Error al cargar los empleados:', error);
+        }
       };
+      fetchEmployees();
+    }, []);
 
-      const addResume = async () => {
-        if (resume) {
-          const formData = new FormData();
-          formData.append('resume', resume); // Agregar el archivo al FormData
-
-          try {
-            const response = await axios.post('http://localhost:3001/api/resumes', formData);
-            return response.data;
-          } catch (error) {
-            // Manejar errores
-            console.error('Error al subir el archivo:', error);
-            throw error;
-          }
-        };
-      };
+    const handleFileChange = (e) => {
+      const file = e.target.files[0];
+      setResume(file);
+    };
 
     const addEmployee = async (event) => {
-        event.preventDefault();
-        try {
-          if (!newEmployee.name || !newEmployee.age || !newEmployee.position) {
-            alert("Please, complete all mandatory fields");
-            return;
+      event.preventDefault();
+      try {
+        if (!newEmployee.name || !newEmployee.age || !newEmployee.position || !resume) {
+          alert("Please, complete all mandatory fields");
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append('name', newEmployee.name);
+        formData.append('age', newEmployee.age);
+        formData.append('position', newEmployee.position);
+
+        if (resume) {
+          formData.append('resume', resume);
+        }
+
+        const response = await axios.post('http://localhost:3001/api/employees', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
           }
+        });
+        console.log('Response from server:', response.data);
 
-          let uploadedResume = null;
-            if (resume) {
-                uploadedResume = await addResume();
-                document.getElementById('file').value = '';
-                setResume(null);
-            }
-            const employeeWithResume = {
-              ...newEmployee,
-              resume: uploadedResume ? uploadedResume.resume : null
-            };
+        // Actualizo la lista despues de agregar un employee
+        const employeesResponse = await axios.get('http://localhost:3001/api/employees');
 
-            await axios.post('http://localhost:3001/api/employees', employeeWithResume );
-            // Actualizo la lista despues de agregar un employee
-            const employeesResponse = await axios.get('http://localhost:3001/api/employees');
+        // Limpio los campos
+        setEmployees(employeesResponse.data.employees);
+        setNewEmployee({ name: '', age: '', position: '' });
+        setResume(null);
+        document.getElementById('file').value = '';
 
-            // Limpio los campos
-            setEmployees(employeesResponse.data.employees);
-            setNewEmployee({ name: '', age: '', position: '' });
-            alert('Employee created successfully!');
-        } catch(error) {
-            alert('Error saving the employee');
-        };
+        alert('Employee created successfully!');
+      } catch(error) {
+          alert('Error saving the employee');
+      };
     };
 
   return (
@@ -123,6 +114,7 @@ function App() {
                 <h4>Name</h4>
                 <h4>Age</h4>
                 <h4>Position</h4>
+                <h4>Resume</h4>
                 <h4>Actions</h4>
             </div>
             <Employees employees={employees} setEmployees={setEmployees} />

@@ -1,13 +1,30 @@
 # Use root/example as user/password credentials
+version: '3.8'
+
 services:
   db:
-    image: mysql
+    image: mysql:latest
+    container_name: bdd-tp-back
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: sinclair
+      MYSQL_DATABASE: mydatabase
     ports:
       - 3306:3306
+
   adminer:
     image: adminer
     ports:
       - 8080:8080
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo-container
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data: {}

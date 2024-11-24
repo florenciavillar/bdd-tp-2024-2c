@@ -28,7 +28,24 @@ const Employees = ({ employees, setEmployees }) => {
 
   const updateEmployee = async (updatedEmployee) => {
     try {
-      const response = await axios.put(`http://localhost:3001/api/employees/${updatedEmployee.id}`, updatedEmployee);
+      const formData = new FormData();
+      formData.append('name', updatedEmployee.name);
+      formData.append('age', updatedEmployee.age);
+      formData.append('position', updatedEmployee.position);
+      
+      if (updatedEmployee.resume) {
+        formData.append('resume', updatedEmployee.resume);
+      }
+  
+      if (updatedEmployee.deleteResume) {
+        formData.append('deleteResume', true);
+      }
+
+      const response = await axios.put(`http://localhost:3001/api/employees/${updatedEmployee.id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 
       if (response.status === 200) {
         const updatedEmployees = employees.map(employee =>
@@ -62,6 +79,11 @@ const Employees = ({ employees, setEmployees }) => {
             <p className="position">
               {employee.position}
             </p>
+            {employee.resume_id && (
+                <a href={`http://localhost:3001/api/resumes/${employee.resume_id}`} target="_blank" rel="noopener noreferrer">
+                    Download Resume
+                </a>
+            )}
             <div className="actions">
               <FaRegTrashCan onClick={() => deleteEmployee(employee.id)} />
               <FaEdit onClick={() => editEmployee(employee)} />
