@@ -11,6 +11,8 @@ services:
       MYSQL_DATABASE: mydatabase
     ports:
       - 3306:3306
+    volumes:
+      - ./mysql:/docker-entrypoint-initdb.d
 
   adminer:
     image: adminer
